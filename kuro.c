@@ -1,8 +1,5 @@
-#include "efi/efi.h"
+#include "efi.h"
 
-#include <stdio.h>
-
-int main(void) {
-    printf("Hello, World!\n");
+EFI_STATUS EFIAPI efi_main(void) {
     return 0;
 }
