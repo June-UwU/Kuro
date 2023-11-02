@@ -20,12 +20,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_C_FLAGS "-target aarch64-unknown-windows -nostdlib -fuse-ld=lld-link -Wall -Wextra -Wpedantic -mno-red-zone -ffreestanding")
 
-# Set the default generator
-if(NOT CMAKE_GENERATOR)
-    set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "CMake generator" FORCE)
-endif()
-
-
 file(GLOB global_inc ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB global_src ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 
