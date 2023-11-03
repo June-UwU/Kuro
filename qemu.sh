@@ -1,1 +1,1 @@
-qemu-system-aarch64 -machine virt -cpu cortex-a57 -net none -bios /usr/share/ovmf/aarch64/QEMU_EFI.fd -monitor stdio
+qemu-system-aarch64 -drive format=raw,file=Kuro.hdd -machine virt -cpu cortex-a57 -net none -bios /usr/share/ovmf/aarch64/QEMU_EFI.fd -monitor stdio
