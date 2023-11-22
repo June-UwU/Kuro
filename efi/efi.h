@@ -283,7 +283,7 @@ EFI_STATUS
 
 typedef
 EFI_STATUS
-(* EFIAPI EFI_TEXT_SET_MODE) (
+(EFIAPI *EFI_TEXT_SET_MODE) (
   IN EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* This,
   IN UINTN                            ModeNumber
 );
@@ -354,6 +354,190 @@ typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
 #define EFI_1_02_SYSTEM_TABLE_REVISION ((1<<16) | (02))
 #define EFI_SPECIFICATION_VERSION EFI_SYSTEM_TABLE_REVISION
 #define EFI_SYSTEM_TABLE_REVISION EFI_2_90_SYSTEM_TABLE_REVISION
+
+typedef struct {
+  UINT16  Year; // 1900 – 9999
+  UINT8   Month; // 1 – 12
+  UINT8   Day; // 1 – 31
+  UINT8   Hour; // 0 – 23
+  UINT8   Minute; // 0 – 59
+  UINT8   Second; // 0 – 59
+  UINT8   Pad1;
+  UINT32  Nanosecond; // 0 – 999,999,999
+  INT16   TimeZone; // -1440 to 1440 or 2047
+  UINT8   Daylight;
+  UINT8   Pad2;
+} EFI_TIME;
+
+typedef struct {
+  UINT32  Resolution;
+  UINT32  Accuracy;
+  BOOLEAN SetsToZero;
+} EFI_TIME_CAPABILITIES;
+
+//*******************************************************
+//EFI_PHYSICAL_ADDRESS
+//*******************************************************
+typedef UINT64 EFI_PHYSICAL_ADDRESS;
+//*******************************************************
+//EFI_VIRTUAL_ADDRESS
+//*******************************************************
+typedef UINT64 EFI_VIRTUAL_ADDRESS;
+//*******************************************************
+// Memory Descriptor Version Number
+//*******************************************************
+#define EFI_MEMORY_DESCRIPTOR_VERSION 1
+
+//*******************************************************
+// Memory Attribute Definitions
+//*******************************************************
+// These types can be “OR-ed” together as needed.
+#define EFI_MEMORY_UC             0x0000000000000001
+#define EFI_MEMORY_WC             0x0000000000000002
+#define EFI_MEMORY_WT             0x0000000000000004
+#define EFI_MEMORY_WB             0x0000000000000008
+#define EFI_MEMORY_UCE            0x0000000000000010
+#define EFI_MEMORY_WP             0x0000000000001000
+#define EFI_MEMORY_RP             0x0000000000002000
+#define EFI_MEMORY_XP             0x0000000000004000
+#define EFI_MEMORY_NV             0x0000000000008000
+#define EFI_MEMORY_MORE_RELIABLE  0x0000000000010000
+#define EFI_MEMORY_RO             0x0000000000020000
+#define EFI_MEMORY_SP             0x0000000000040000
+#define EFI_MEMORY_CPU_CRYPTO     0x0000000000080000
+#define EFI_MEMORY_RUNTIME        0x8000000000000000
+
+typedef struct {
+  UINT32                Type;
+  EFI_PHYSICAL_ADDRESS  PhysicalStart;
+  EFI_VIRTUAL_ADDRESS   VirtualStart;
+  UINT64                NumberOfPages;
+  UINT64                Attribute;
+} EFI_MEMORY_DESCRIPTOR;
+
+//*******************************************************
+// Bit Definitions for EFI_TIME.Daylight. See below.
+//*******************************************************
+#define EFI_TIME_ADJUST_DAYLIGHT 0x01
+#define EFI_TIME_IN_DAYLIGHT 0x02
+//*******************************************************
+// Value Definition for EFI_TIME.TimeZone. See below.
+//*******************************************************
+#define EFI_UNSPECIFIED_TIMEZONE 0x07FF
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_GET_TIME) (
+  OUT EFI_TIME* Time, 
+  OUT EFI_TIME_CAPABILITIES* Capabilities OPTIONAL
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_SET_TIME) (
+  IN EFI_TIME* Time
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_GET_WAKEUP_TIME) (
+  OUT BOOLEAN* Enabled, 
+  OUT BOOLEAN* Pending, 
+  OUT EFI_TIME* Time
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_SET_WAKEUP_TIME) (
+  IN BOOLEAN Enable, 
+  IN EFI_TIME* Time OPTIONAL
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_SET_VIRTUAL_ADDRESS_MAP) (
+  IN UINTN MemoryMapSize,
+  IN UINTN DescriptorSize,
+  IN UINT32 DescriptorVersion,
+  IN EFI_MEMORY_DESCRIPTOR* VirtualMap
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_CONVERT_POINTER) (
+  IN UINTN DebugDisposition,
+  IN VOID** Address
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_GET_VARIABLE) (
+  IN CHAR16* VariableName, 
+  IN EFI_GUID* VendorGuid, 
+  OUT UINT32* Attributes OPTIONAL, 
+  IN OUT UINTN* DataSize, 
+  OUT VOID* Data OPTIONAL
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_GET_NEXT_VARIABLE_NAME) (
+  IN OUT UINTN* VariableNameSize, 
+  IN OUT CHAR16* VariableName, 
+  IN OUT EFI_GUID* VendorGuid
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_SET_VARIABLE) (
+  IN CHAR16* VariableName, 
+  IN EFI_GUID* VendorGuid, 
+  IN UINT32 Attributes, 
+  IN UINTN DataSize, 
+  IN VOID* Data
+);
+
+typedef 
+EFI_STATUS 
+(EFIAPI *EFI_GET_NEXT_HIGH_MONO_COUNT) (
+  OUT UINT32* HighCount
+);
+
+typedef 
+VOID 
+(EFIAPI *EFI_RESET_SYSTEM) (
+  IN EFI_RESET_TYPE ResetType,
+  IN EFI_STATUS     ResetStatus,
+  IN UINTN          DataSize,
+  IN VOID*          ResetData OPTIONAL
+);
+
+typedef
+EFI_STATUS 
+(EFIAPI *EFI_UPDATE_CAPSULE) (
+  IN EFI_CAPSULE_HEADER** CapsuleHeaderArray,
+  IN UINTN                CapsuleCount,
+  IN EFI_PHYSICAL_ADDRESS ScatterGatherList OPTIONAL
+);
+
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_QUERY_CAPSULE_CAPABILITIES) (
+  IN EFI_CAPSULE_HEADER **CapsuleHeaderArray,
+  IN UINTN CapsuleCount,
+  OUT UINT64 *MaximumCapsuleSize,
+  OUT EFI_RESET_TYPE *ResetType
+);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_QUERY_VARIABLE_INFO) (
+  IN UINT32 Attributes,
+  OUT UINT64 *MaximumVariableStorageSize,
+  OUT UINT64 *RemainingVariableStorageSize,
+  OUT UINT64 *MaximumVariableSize
+);
 
 #define EFI_RUNTIME_SERVICES_SIGNATURE 0x56524553544e5552
 #define EFI_RUNTIME_SERVICES_REVISION EFI_SPECIFICATION_VERSION
