@@ -3,9 +3,11 @@
 EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     (void) ImageHandle;
     
-    SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
-    SystemTable->ConOut->SetAttribute(SystemTable->ConOut,EFI_TEXT_ATTR(EFI_BLUE,EFI_RED));
-    SystemTable->ConOut->OutputString(SystemTable->ConOut,u"Hello, World!\n");
+    INITIALIZE_EFI_GLOBALS(SystemTable)
+
+    ST->ConOut->ClearScreen(ST->ConOut);
+    ST->ConOut->SetAttribute(ST->ConOut,EFI_TEXT_ATTR(EFI_BLUE,EFI_RED));
+    ST->ConOut->OutputString(ST->ConOut,u"Hello, World!\n");
     
     while(TRUE);
     return EFI_SUCCESS;

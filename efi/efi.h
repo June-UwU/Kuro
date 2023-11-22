@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 
+// UEFI Specs: https://uefi.org/sites/default/files/resources/UEFI_Spec_2_9_2021_03_18.pdf 
+
+
 #define IN
 #define OUT
 #define OPTIONAL
@@ -202,6 +205,7 @@ typedef struct {
   UINT32 Reserved;
 } EFI_TABLE_HEADER;
 
+// EFI stubs for forward decls
 typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL EFI_SIMPLE_TEXT_INPUT_PROTOCOL; 
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
@@ -351,6 +355,77 @@ typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
 #define EFI_SPECIFICATION_VERSION EFI_SYSTEM_TABLE_REVISION
 #define EFI_SYSTEM_TABLE_REVISION EFI_2_90_SYSTEM_TABLE_REVISION
 
+#define EFI_RUNTIME_SERVICES_SIGNATURE 0x56524553544e5552
+#define EFI_RUNTIME_SERVICES_REVISION EFI_SPECIFICATION_VERSION
+
+typedef struct {
+  EFI_TABLE_HEADER Hdr;
+  EFI_GET_TIME                    GetTime;
+  EFI_SET_TIME                    SetTime;
+  EFI_GET_WAKEUP_TIME             GetWakeupTime;
+  EFI_SET_WAKEUP_TIME             SetWakeupTime;
+  EFI_SET_VIRTUAL_ADDRESS_MAP     SetVirtualAddressMap;
+  EFI_CONVERT_POINTER             ConvertPointer;
+  EFI_GET_VARIABLE                GetVariable;
+  EFI_GET_NEXT_VARIABLE_NAME      GetNextVariableName;
+  EFI_SET_VARIABLE                SetVariable;
+  EFI_GET_NEXT_HIGH_MONO_COUNT    GetNextHighMonotonicCount;
+  EFI_RESET_SYSTEM                ResetSystem;
+  EFI_UPDATE_CAPSULE              UpdateCapsule;
+  EFI_QUERY_CAPSULE_CAPABILITIES  QueryCapsuleCapabilities;
+  EFI_QUERY_VARIABLE_INFO         QueryVariableInfo;
+} EFI_RUNTIME_SERVICES;
+
+#define EFI_BOOT_SERVICES_SIGNATURE 0x56524553544f4f42
+#define EFI_BOOT_SERVICES_REVISION EFI_SPECIFICATION_VERSION
+typedef struct {
+  EFI_TABLE_HEADER                           Hdr;
+  EFI_RAISE_TPL                              RaiseTPL; 
+  EFI_RESTORE_TPL                            RestoreTPL;
+  EFI_ALLOCATE_PAGES                         AllocatePages; 
+  EFI_FREE_PAGES                             FreePages; 
+  EFI_GET_MEMORY_MAP                         GetMemoryMap; 
+  EFI_ALLOCATE_POOL                          AllocatePool; 
+  EFI_FREE_POOL                              FreePool; 
+  EFI_CREATE_EVENT                           CreateEvent; 
+  EFI_SET_TIMER                              SetTimer; 
+  EFI_WAIT_FOR_EVENT                         WaitForEvent; 
+  EFI_SIGNAL_EVENT                           SignalEvent; 
+  EFI_CLOSE_EVENT                            CloseEvent; 
+  EFI_CHECK_EVENT                            CheckEvent; 
+  EFI_INSTALL_PROTOCOL_INTERFACE             InstallProtocolInterface; 
+  EFI_REINSTALL_PROTOCOL_INTERFACE           ReinstallProtocolInterface; 
+  EFI_UNINSTALL_PROTOCOL_INTERFACE           UninstallProtocolInterface; 
+  EFI_HANDLE_PROTOCOL                        HandleProtocol; 
+  VOID*                                      Reserved; 
+  EFI_REGISTER_PROTOCOL_NOTIFY               RegisterProtocolNotify; 
+  EFI_LOCATE_HANDLE                          LocateHandle; 
+  EFI_LOCATE_DEVICE_PATH                     LocateDevicePath; 
+  EFI_INSTALL_CONFIGURATION_TABLE            InstallConfigurationTable; 
+  EFI_IMAGE_LOAD                             LoadImage; 
+  EFI_IMAGE_START                            StartImage;
+  EFI_EXIT                                   Exit;
+  EFI_IMAGE_UNLOAD                           UnloadImage; 
+  EFI_EXIT_BOOT_SERVICES                     ExitBootServices;
+  EFI_GET_NEXT_MONOTONIC_COUNT               GetNextMonotonicCount;
+  EFI_STALL                                  Stall;
+  EFI_SET_WATCHDOG_TIMER                     SetWatchdogTimer;
+  EFI_CONNECT_CONTROLLER                     ConnectController;
+  EFI_DISCONNECT_CONTROLLER                  DisconnectController;
+  EFI_OPEN_PROTOCOL                          OpenProtocol; 
+  EFI_CLOSE_PROTOCOL                         CloseProtocol; 
+  EFI_OPEN_PROTOCOL_INFORMATION              OpenProtocolInformation;
+  EFI_PROTOCOLS_PER_HANDLE                   ProtocolsPerHandle; 
+  EFI_LOCATE_HANDLE_BUFFER                   LocateHandleBuffer; 
+  EFI_LOCATE_PROTOCOL                        LocateProtocol; 
+  EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES   InstallMultipleProtocolInterfaces; 
+  EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES UninstallMultipleProtocolInterfaces;
+  EFI_CALCULATE_CRC32                        CalculateCrc32;
+  EFI_COPY_MEM                               CopyMem; 
+  EFI_SET_MEM                                SetMem; 
+  EFI_CREATE_EVENT_EX                        CreateEventEx; 
+} EFI_BOOT_SERVICES;
+
 typedef struct {
   EFI_TABLE_HEADER                  Hdr;
   CHAR16*                           FirmwareVendor;
@@ -361,11 +436,19 @@ typedef struct {
   EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL*  ConOut;
   EFI_HANDLE                        StandardErrorHandle;
   EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL*  StdErr;
-  // EFI_RUNTIME_SERVICES*             RuntimeServices;
-  // EFI_BOOT_SERVICES*                BootServices;
-  void* RuntimeServices; // TO REMOVE
-  void* BootServices; // TO REMOVE
+  EFI_RUNTIME_SERVICES*             RuntimeServices;
+  EFI_BOOT_SERVICES*                BootServices;
   UINTN                             NumberOfTableEntries;
   void* ConfigurationTable; // TO REMOVE
   // EFI_CONFIGURATION_TABLE*          ConfigurationTable;
 } EFI_SYSTEM_TABLE;
+
+
+extern EFI_SYSTEM_TABLE*      ST;
+extern EFI_RUNTIME_SERVICES*  RS;
+extern EFI_BOOT_SERVICES*     BS;
+
+#define INITIALIZE_EFI_GLOBALS(SystemTable) \
+        ST = SystemTable; \
+        RS = SytemTable->RuntimeServices; \
+        BS = SytemTable->BootServices;
