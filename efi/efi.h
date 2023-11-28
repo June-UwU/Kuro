@@ -385,6 +385,13 @@ typedef struct {
   BOOLEAN SetsToZero;
 } EFI_TIME_CAPABILITIES;
 
+typedef struct {
+  EFI_GUID  CapsuleGuid;
+  UINT32    HeaderSize;
+  UINT32    Flags;
+  UINT32    CapsuleImageSize;
+} EFI_CAPSULE_HEADER;
+
 typedef enum {
   EfiReservedMemoryType,
   EfiLoaderCode,
@@ -401,9 +408,16 @@ typedef enum {
   EfiMemoryMappedIOPortSpace,
   EfiPalCode,
   EfiPersistentMemory,
-  EfiUnacceptedMemoryType
+  EfiUnacceptedMemoryType,
   EfiMaxMemoryType
 } EFI_MEMORY_TYPE;
+
+typedef enum {
+  EfiResetCold,
+  EfiResetWarm,
+  EfiResetShutdown, 
+  EfiResetPlatformSpecific
+} EFI_RESET_TYPE;
 
 //*******************************************************
 //EFI_PHYSICAL_ADDRESS
@@ -609,10 +623,6 @@ typedef struct _EFI_DEVICE_PATH_PROTOCOL {
 } EFI_DEVICE_PATH_PROTOCOL;
 
 //*******************************************************
-// EFI_TPL
-//*******************************************************
-typedef UINTN EFI_TPL
-//*******************************************************
 // Task Priority Levels
 //*******************************************************
 #define TPL_APPLICATION 4
@@ -679,7 +689,7 @@ typedef
 VOID
 (EFIAPI *EFI_RESTORE_TPL) (
   IN EFI_TPL OldTpl
-)
+);
 
 typedef
 EFI_STATUS
@@ -883,18 +893,18 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_STALL) (
   IN UINTN Microseconds
-)
+);
 
 typedef
 EFI_STATUS
-(EFIAPI *EFI_SET_WATCHDOG_TIMER) ((
+(EFIAPI *EFI_SET_WATCHDOG_TIMER) (
   IN UINTN    Timeout,
   IN UINT64   WatchdogCode,
   IN UINTN    DataSize,
   IN CHAR16*  WatchdogData OPTIONAL
 );
 
-EFI_STATUS
+typedef EFI_STATUS
 (EFIAPI *EFI_CONNECT_CONTROLLER) (
   IN EFI_HANDLE                 ControllerHandle,
   IN EFI_HANDLE*                DriverImageHandle OPTIONAL,
@@ -902,7 +912,7 @@ EFI_STATUS
   IN BOOLEAN                    Recursive
 );
 
-EFI_STATUS
+typedef EFI_STATUS
 (EFIAPI *EFI_DISCONNECT_CONTROLLER) (
   IN EFI_HANDLE ControllerHandle,
   IN EFI_HANDLE DriverImageHandle OPTIONAL,
@@ -966,21 +976,21 @@ EFI_STATUS
 
 typedef
 EFI_STATUS
-EFIAPI *EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES) (
+(EFIAPI *EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES) (
   IN OUT EFI_HANDLE*  Handle,
   ...
 );
 
 typedef
 EFI_STATUS
-EFIAPI *EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES) (
+(EFIAPI *EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES) (
   IN EFI_HANDLE Handle,
   ...
 );
 
 typedef
 EFI_STATUS
-(EFIAPI *EFI_CALCULATE_CRC32)
+(EFIAPI *EFI_CALCULATE_CRC32) (
   IN VOID*    Data,
   IN UINTN    DataSize,
   OUT UINT32* Crc32
@@ -996,7 +1006,7 @@ VOID
 
 typedef
 VOID
-EFIAPI *EFI_SET_MEM) (
+(EFIAPI *EFI_SET_MEM) (
   IN VOID*  Buffer,
   IN UINTN  Size,
   IN UINT8  Value
@@ -1081,11 +1091,17 @@ typedef struct {
 } EFI_SYSTEM_TABLE;
 
 
-extern EFI_SYSTEM_TABLE*      ST;
-extern EFI_RUNTIME_SERVICES*  RS;
-extern EFI_BOOT_SERVICES*     BS;
-
+EFI_SYSTEM_TABLE*                ST;
+EFI_RUNTIME_SERVICES*            RS;
+EFI_BOOT_SERVICES*               BS;
+EFI_SIMPLE_TEXT_INPUT_PROTOCOL*  ConIn;
+EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* ConOut;
+EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* ConErr;
 #define INITIALIZE_EFI_GLOBALS(SystemTable) \
         ST = SystemTable; \
-        RS = SytemTable->RuntimeServices; \
-        BS = SytemTable->BootServices;
+        RS = SystemTable->RuntimeServices; \
+        BS = SystemTable->BootServices; \
+        ConOut = ST->ConOut;  \
+        ConIn  = ST->ConIn; \
+        ConErr = ST->StdErr;  \
+      
