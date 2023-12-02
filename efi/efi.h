@@ -1091,12 +1091,13 @@ typedef struct {
 } EFI_SYSTEM_TABLE;
 
 
-EFI_SYSTEM_TABLE*                ST;
-EFI_RUNTIME_SERVICES*            RS;
-EFI_BOOT_SERVICES*               BS;
-EFI_SIMPLE_TEXT_INPUT_PROTOCOL*  ConIn;
-EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* ConOut;
-EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* ConErr;
+static EFI_SYSTEM_TABLE*                 ST;
+static EFI_RUNTIME_SERVICES*             RS;
+static EFI_BOOT_SERVICES*                BS;
+static EFI_SIMPLE_TEXT_INPUT_PROTOCOL*   ConIn;
+static EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL*  ConOut;
+static EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL*  ConErr;
+
 #define INITIALIZE_EFI_GLOBALS(SystemTable) \
         ST = SystemTable; \
         RS = SystemTable->RuntimeServices; \
