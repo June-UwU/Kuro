@@ -7,13 +7,20 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable
     
     INITIALIZE_EFI_GLOBALS(SystemTable)
 
-    ConOut->ClearScreen(ConOut);
-    ConOut->SetAttribute(ConOut,EFI_TEXT_ATTR(EFI_BLUE,EFI_RED));
-    printf(u"Hello, World inline test!\n");
-    printf(u"decimal value : %d\n",1024);
-    printf(u"hexadecimal value : %x\n",0x1024);
-    printf(u"character value : %c\n",u'F');
-    printf(u"string value : %s\n",u"hello world");
+    clearScreen();
+    setAttribute(EFI_TEXT_ATTR(EFI_BLUE,EFI_RED));
+    
+    UINTN modes = 0;
+    UINTN height = 0;
+    UINTN width = 0;
+    EFI_STATUS status = ConOut->QueryMode(ConOut, modes, &width, &height);
+
+    for(; EFI_SUCCESS == status;) {
+        modes++;
+        printf(u"Mode %d: %dx%d\n", modes, width, height);
+        status = ConOut->QueryMode(ConOut, modes, &width, &height);
+    }
+    
     while(TRUE);
     return EFI_SUCCESS;
 }
