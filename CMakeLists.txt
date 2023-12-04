@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(CMakePrintHelpers)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PROJECT_NAME "Kuro")
 
@@ -26,18 +28,20 @@ file(GLOB global_src ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${global_inc})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${global_src})
 
-file(GLOB ${efi_spec_inc} ${CMAKE_CURRENT_SOURCE_DIR}/efi/*.h)
-file(GLOB ${efi_spec_src} ${CMAKE_CURRENT_SOURCE_DIR}/efi/*.c)
+file(GLOB efi_spec_inc ${CMAKE_CURRENT_SOURCE_DIR}/efi/*.h)
+file(GLOB efi_spec_src ${CMAKE_CURRENT_SOURCE_DIR}/efi/*.c)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${efi_spec_inc})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${efi_spec_src})
 
+cmake_print_variables(global_src)
+cmake_print_variables(efi_spec_src)
 
 add_executable(${PROJECT_NAME}
+	${efi_spec_inc}
+    ${efi_spec_src}
 	${global_inc}
 	${global_src}
-    ${efi_spec_inc}
-    ${efi_spec_src}
 	)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
